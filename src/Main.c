@@ -35,26 +35,23 @@ void Update(AlxWindow* w){
 	}
 		
 
-	const signed int absx = PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX);
-	const signed int absy = PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LY);
-	
-	if(Stroke(ALX_KEY_A).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_UP).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_PAGEUP).DOWN)
+	if(Stroke(ALX_KEY_LEFT).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_UP).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_PAGEUP).DOWN)
 		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ -1.0f,0.0f },w->ElapsedTime));
-	else if(Stroke(ALX_KEY_D).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_DOWN).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_PAGEDOWN).DOWN)
+	else if(Stroke(ALX_KEY_RIGHT).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_DOWN).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_PAGEDOWN).DOWN)
 		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 1.0f,0.0f },w->ElapsedTime));
-	else if(absx >= 0 && absx < 128)
-		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ F32_Map(absx,0.0f,255.0f,-1.0f,1.0f),0.0f },w->ElapsedTime));
-	else if(absx >= 128)
-		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ F32_Map(absx,0.0f,255.0f,-1.0f,1.0f),0.0f },w->ElapsedTime));
+	else
+		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ PS4_Controller_Dir(&ps4c,PS4_CONTROLLER_LX,0.2f,0),0.0f },w->ElapsedTime));
 	
-	if(Stroke(ALX_KEY_W).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_ESC).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_LALT).DOWN)
+	if(Stroke(ALX_KEY_UP).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_ESC).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_LALT).DOWN)
+		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 0.0f,-1.0f },w->ElapsedTime));
+	else if(Stroke(ALX_KEY_DOWN).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_B).DOWN)
 		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 0.0f,1.0f },w->ElapsedTime));
-	else if(Stroke(ALX_KEY_S).DOWN || PPTX_Controller_Key(&pptx,PPTX_CONTROLLER_B).DOWN)
-		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 0.0f,1.0f },w->ElapsedTime));
-	else if(absy >= 0 && absy < 128)
-		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 0.0f,F32_Map(absx,0.0f,255.0f,-1.0f,1.0f) },w->ElapsedTime));
-	else if(absy >= 128)
-		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 0.0f,F32_Map(absx,0.0f,255.0f,-1.0f,1.0f) },w->ElapsedTime));
+	else
+		player.p = Vec2_Add(player.p,Vec2_Mulf((Vec2){ 0.0f,PS4_Controller_Dir(&ps4c,PS4_CONTROLLER_LY,0.2f,0) },w->ElapsedTime));
+
+	
+	player.d = Vec2_Add(player.d,Vec2_Mulf((Vec2){ PS4_Controller_Dir(&ps4c,PS4_CONTROLLER_RX,0.2f,0),PS4_Controller_Dir(&ps4c,PS4_CONTROLLER_RY,0.2f,0) },w->ElapsedTime));
+	player.d = Vec2_Clamp(player.d,(Vec2){ 0.5f,0.5f },(Vec2){ 10.0f,10.0f });
 
 	Clear(LIGHT_BLUE);
 
